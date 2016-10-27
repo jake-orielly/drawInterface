@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    border: 1px solid #d3d3d3;
+    background-color: #f1f1f1;
+}
+</style>
+</head>
+<body onload="startGame()">
+<script>
+
+var player;
+var boardX = 900;
+var boardY = 900;
+var drawn = [];
+function startGame() {
+	gameArea.start();
+}
+
+var gameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = boardX;
+        this.canvas.height = boardY;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+		this.interval = setInterval(updateGameArea, 20);
+		window.addEventListener("mouseup", clicked);
+		window.addEventListener('keydown', function (e) {
+            gameArea.keys = (gameArea.keys || []);
+            gameArea.keys[e.keyCode] = true;
+        })
+        window.addEventListener('keyup', function (e) {
+            gameArea.keys[e.keyCode] = false; 
+        })
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function component(width, height, color, x, y, name) {
+	this.name = name;
+    this.width = width;
+    this.height = height;
+	this.speedX = 0;
+    this.speedY = 0;
+    this.x = x;
+    this.y = y;    
+    this.update = function() {
+        ctx = gameArea.context;
+		if (this.name == "text") {
+		  ctx.font = this.width + " " + this.height;
+		  ctx.fillStyle = color;
+		  ctx.fillText(this.text, this.x, this.y);
+		}
+		else {
+		  ctx.fillStyle = color;
+		  ctx.fillRect(this.x, this.y, this.width, this.height);
+		}
+    }
+	
+    this.newPos = function() {
+		this.x += this.speedX;
+		this.y += this.speedY;        
+	}
+} 
+
+function clicked(event) { //called any time the user clicks
+	var x = event.clientX;
+	var y = event.clientY;
+
+	drawn[drawn.length] = new component(30, 30, "red", x, y, "red");
+}
+
+function updateGameArea() {
+    gameArea.clear();
+	
+    if (gameArea.keys) {
+		handleInput();
+	}
+	
+	for (var i = 0; i < drawn.length; i++) {
+		drawn[i].update();
+	}
+}
+
+function handleInput() {
+    if (gameArea.keys[87]) {alert(2)}
+}
+</script>
+
+</body>
+</html>
