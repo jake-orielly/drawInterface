@@ -16,7 +16,14 @@ var player;
 var boardX = 900;
 var boardY = 900;
 var drawn = [];
+var thickness = 3;
+var drawing = false;
+var mouseX;
+var mouseY;
+var frame;
+
 function startGame() {
+	frame = 0;
 	gameArea.start();
 }
 
@@ -28,7 +35,9 @@ var gameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 		this.interval = setInterval(updateGameArea, 20);
-		window.addEventListener("mouseup", clicked);
+		window.addEventListener("mousedown", mouseDown)
+		window.addEventListener("mouseup", mouseUp);
+		window.addEventListener("mousemove", mouseDrag);
 		window.addEventListener('keydown', function (e) {
             gameArea.keys = (gameArea.keys || []);
             gameArea.keys[e.keyCode] = true;
@@ -69,11 +78,20 @@ function component(width, height, color, x, y, name) {
 	}
 } 
 
-function clicked(event) { //called any time the user clicks
-	var x = event.clientX;
-	var y = event.clientY;
+function mouseDown(event) { //called any time the user clicks
+	drawing = true;
+}
 
-	drawn[drawn.length] = new component(30, 30, "red", x, y, "red");
+function mouseDrag(event) {
+	mouseX = event.clientX;
+	mouseY = event.clientY;
+	
+	if (drawing)
+		drawn[drawn.length] = new component(thickness, thickness, "red", mouseX, mouseY, "red");
+}
+
+function mouseUp(event) {
+	drawing = false;
 }
 
 function updateGameArea() {
@@ -86,6 +104,8 @@ function updateGameArea() {
 	for (var i = 0; i < drawn.length; i++) {
 		drawn[i].update();
 	}
+	
+	frame++;
 }
 
 function handleInput() {
